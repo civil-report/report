@@ -388,95 +388,128 @@
         setupImagePreview('duringImage', 'duringPreview');
         setupImagePreview('afterImage', 'afterPreview');
 
-        // إرسال النموذج
-        document.getElementById('reportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const form = e.target;
-            const submitBtn = document.getElementById('submitBtn');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            
-            // تعطيل الزر وإظهار مؤشر التحميل
-            submitBtn.disabled = true;
-            loadingIndicator.style.display = 'block';
-            
-            try {
-                // جمع بيانات النموذج
-                const formData = new FormData(form);
-                const jsonData = {};
-                
-                // تحويل FormData إلى كائن JSON
-                for (const [key, value] of formData.entries()) {
-                    jsonData[key] = value;
-                }
-                
-                // معالجة الصور
-                jsonData.beforeImage = await getBase64('beforeImage');
-                if (document.getElementById('duringImage').files[0]) {
-                    jsonData.duringImage = await getBase64('duringImage');
-                }
-                if (document.getElementById('afterImage').files[0]) {
-                    jsonData.afterImage = await getBase64('afterImage');
-                }
-                
-                // إرسال البيانات إلى Google Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbyNUutDkrE6fnoA7_dsnI-WIH1-G5KpUcoKKvXNkdMhumLvFmeoEgQpwJpHpY51vw1HAg/exec', {
-                    method: 'POST',
-                    body: JSON.stringify(jsonData),
-                    headers: {
-                        'Content-Type': 'application/json'
+       // الدالة getBase64 التي تقوم بتحويل الصورة إلى Base64
+    function getBase64(inputId) {
+        return new Promise((resolve, reject) => {
+            const fileInput = document.getElementById(inputId);
+            const file = fileInput.files[0];
+
+            if (!file) {
+                resolve(null); // لا توجد صورة، قم بحلها بـ null
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // معالجة إرسال النموذج
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('reportForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        // تعبئة التواريخ والأوقات تلقائياً عند تحميل الصفحة
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const time = now.toTimeString().substring(0, 5); // للحصول على HH:MM
+
+        const reportDateInput = document.getElementById('reportDate');
+        const reportTimeInput = document.getElementById('reportTime');
+
+        if (reportDateInput) reportDateInput.value = today;
+        if (reportTimeInput) reportTimeInput.value = time;
+
+        // معالجة معاينة الصور
+        const imageInputs = ['beforeImage', 'duringImage', 'afterImage'];
+        imageInputs.forEach(inputId => {
+            const inputElement = document.getElementById(inputId);
+            const previewElement = document.getElementById(`${inputId}Preview`); // ID المعاينة: inputId + "Preview"
+            if (inputElement && previewElement) {
+                inputElement.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            previewElement.src = e.target.result;
+                            previewElement.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewElement.src = '';
+                        previewElement.style.display = 'none';
                     }
                 });
-                
+            }
+        });
+
+
+        // الاستماع لحدث إرسال النموذج
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault(); // منع الإرسال الافتراضي للنموذج
+
+            submitBtn.disabled = true; // تعطيل الزر لمنع الإرسال المتعدد
+            loadingIndicator.style.display = 'block'; // إظهار مؤشر التحميل
+
+            try {
+                const formData = new FormData(form); // إنشاء FormData مباشرة من النموذج
+
+                // إضافة الصور كـ Base64 إلى FormData
+                // يجب أن تتطابق 'beforeImage', 'duringImage', 'afterImage' مع سمات 'name' في input type="file"
+                const beforeImageBase64 = await getBase64('beforeImage');
+                const duringImageBase64 = await getBase64('duringImage');
+                const afterImageBase64 = await getBase64('afterImage');
+
+                if (beforeImageBase64) formData.append('beforeImage', beforeImageBase64);
+                if (duringImageBase64) formData.append('duringImage', duringImageBase64);
+                if (afterImageBase64) formData.append('afterImage', afterImageBase64);
+
+                // ************************************************************
+                // هذا هو رابط تطبيق Google Apps Script المنشور الخاص بك
+                // تأكد من تحديثه برابطك الفعلي!
+                // ************************************************************
+                const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyNUutDkrE6fnoA7_dsnI-WIH1-G5KpUcoKKvXNkdMhumLvFmeoEgQpwJpHpY51vw1HAg/exec'; 
+
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData // إرسال FormData مباشرة
+                    // لا تحدد 'Content-Type' هنا. المتصفح سيقوم بتعيينها تلقائياً لـ FormData (multipart/form-data)
+                });
+
                 if (!response.ok) {
-                    throw new Error('فشل في إرسال البيانات');
+                    // إذا لم تكن الاستجابة ناجحة (مثلاً 400, 500)، اقرأ رسالة الخطأ
+                    const errorText = await response.text(); // حاول قراءة النص
+                    throw new Error(`خطأ في الشبكة (${response.status}): ${errorText || 'لا توجد رسالة خطأ محددة.'}`);
                 }
-                
-                const result = await response.json();
-                
+
+                const result = await response.json(); // افترض أن الاستجابة هي JSON من Apps Script
+
                 if (result.success) {
-                    alert('تم حفظ التقرير بنجاح!');
-                    form.reset();
-                    // إخفاء معاينات الصور
-                    document.querySelectorAll('.preview').forEach(img => {
+                    alert('تم إرسال التقرير بنجاح!');
+                    form.reset(); // مسح النموذج بعد الإرسال الناجح
+                    // إخفاء صور المعاينة بعد مسح النموذج
+                    document.querySelectorAll('.image-preview').forEach(img => {
+                        img.src = '';
                         img.style.display = 'none';
                     });
                 } else {
+                    // إذا كانت الاستجابة JSON تشير إلى فشل (result.success: false)
                     throw new Error(result.message || 'حدث خطأ غير معروف');
                 }
             } catch (error) {
+                // التعامل مع أي أخطاء تحدث أثناء عملية الإرسال
                 console.error('Error:', error);
                 alert(`حدث خطأ: ${error.message}`);
             } finally {
+                // إعادة الزر وتمكين مؤشر التحميل بغض النظر عن النتيجة
                 submitBtn.disabled = false;
                 loadingIndicator.style.display = 'none';
             }
         });
-
-        // تحويل الصور إلى Base64
-        function getBase64(inputId) {
-            return new Promise((resolve, reject) => {
-                const input = document.getElementById(inputId);
-                const file = input.files[0];
-                
-                if (!file) return resolve(null);
-                
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // تعبئة التواريخ تلقائياً
-        document.addEventListener('DOMContentLoaded', function() {
-            const now = new Date();
-            const today = now.toISOString().split('T')[0];
-            const time = now.toTimeString().substring(0, 5);
-            
-            document.getElementById('reportDate').value = today;
-            document.getElementById('reportTime').value = time;
-        });
+    });
     </script>
 </body>
 </html>
