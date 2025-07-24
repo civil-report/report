@@ -38,11 +38,12 @@
             margin: 0;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin: 20px;
+
         }
         .form-row {
             display: flex;
-            gap: 15px;
+            gap: 25px;
             margin-bottom: 15px;
         }
         .form-col {
@@ -175,46 +176,31 @@
                         <label for="department" class="required">الإدارة</label>
                         <select id="department" name="department" required>
                             <option value="">-- اختر الإدارة --</option>
-                            <option value="الإدارة الفنية">الإدارة الفنية</option>
-                            <option value="إدارة المشاريع">إدارة المشاريع</option>
+                            <option value="ادارة تشغيل وصيانة الجسور">ادارة تشغيل وصيانة الجسور</option>
+                            <option value="ادارة تشغيل وصيانة الانفاق">ادارة تشغيل وصيانة الانفاق</option>
+                            <option value="ادارة تشغيل وصيانة الطرق">ادارة تشغيل وصيانة الطرق</option>
+                            <option value="الادارة العامة للمنطقة المركزية">الادارة العامة للمنطقة المركزية</option>
+                            <option value="ادارة اعمال النظافة والصيانة لشبكات تصريف المياه">ادرة اعمال النظافة والصيانة لشبكات تصريف المياه</option>
+                            <option value="ادارة اعمال صيانة شبكات الادارة">ادارة اعمال صيانة شبكات الادارة</option>
+                            <option value="ادارة الاصحاح البيئي">ادارة الاصحاح البيئي</option>
+                            <option value="الادرة العامة للمنطقة المركزية">الادارة العامة للمنطقة المركزية</option>
                             <!-- إضافة باقي الإدارات هنا -->
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="workDescription" class="required">وصف العمل</label>
-                <textarea id="workDescription" name="workDescription" required></textarea>
+              <div class="image-upload-container">
+                <div class="image-upload-box">
+                    <label for="beforeImage" class="required">صورة المعاينة</label>
+                    <input type="file" id="beforeImage" name="beforeImage" accept="image/*" capture="environment" required>
+                    <img id="beforePreview" class="preview" alt="معاينة الصورة">
+                </div>
+           
+                
             </div>
 
-            <div class="form-row">
-                <div class="form-col">
-                    <div class="form-group">
-                        <label for="workStatus" class="required">حالة العمل</label>
-                        <select id="workStatus" name="workStatus" required>
-                            <option value="">-- اختر الحالة --</option>
-                            <option value="مكتمل">مكتمل</option>
-                            <option value="قيد التنفيذ">قيد التنفيذ</option>
-                            <option value="تعذر البدء">تعذر البدء</option>
-                            <option value="تحت المراجعة">تحت المراجعة</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-col">
-                    <div class="form-group">
-                        <label for="workType" class="required">نوع الأعمال</label>
-                        <select id="workType" name="workType" required>
-                            <option value="">-- اختر نوع الأعمال --</option>
-                            <option value="صيانة وقائية">صيانة وقائية</option>
-                            <option value="صيانة تصحيحية">صيانة تصحيحية</option>
-                            <!-- إضافة باقي الأنواع هنا -->
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-row">
+              <div class="form-row">
                 <div class="form-col">
                     <div class="form-group">
                         <label for="reportMethod" class="required">طريقة الرصد</label>
@@ -239,7 +225,7 @@
                 </div>
             </div>
 
-            <div class="form-row">
+               <div class="form-row">
                 <div class="form-col">
                     <div class="form-group">
                         <label for="reportDate" class="required">تاريخ الرصد</label>
@@ -253,6 +239,53 @@
                     </div>
                 </div>
             </div>
+
+             <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="workStatus" class="required">حالة العمل</label>
+                        <select id="workStatus" name="workStatus" required>
+                            <option value="">-- اختر الحالة --</option>
+                            <option value="مكتمل">مكتمل</option>
+                            <option value="قيد التنفيذ">قيد التنفيذ</option>
+                            <option value="تعذر البدء">تعذر البدء</option>
+                            <option value="تحت المراجعة">تحت المراجعة</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="workType" class="required">نوع الأعمال</label>
+                        <select id="workType" name="workType" required>
+                            <option value="">-- اختر نوع الأعمال --</option>
+                            <option value="اعمال صيانة">اعمال صيانة</option>
+                            <option value="اعمال نركيب">اعمال تركيب</option>
+                            <option value="اعمال كشط">اعمال كشط</option>
+                            <option value="اعمال صب">اعمال صب</option>
+                            <option value="اعمال نظافة">اعمال نظافة</option>
+                            <option value="اعمال رقابة">اعمال رقابة</option>
+                            <option value="اعمال معالجة">اعمال معالجة</option>
+                            <option value="اعمال مكافحة">اعمال مكافحة </option>
+                            <option value="اعمال ازالة">اعمال ازالة</option>
+                            <option value="اعمال مصادرة">اعمال مصادرة</option>
+                            <option value="اعمال اغلاق">اعمال اغلاق</option>
+                            <option value="اعمال اتلاف">اعمال اتلاف</option>
+                            <!-- إضافة باقي الأنواع هنا -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="workDescription" class="required">وصف العمل</label>
+                <textarea id="workDescription" name="workDescription" required></textarea>
+            </div>
+
+           
+
+          
+
+         
 
             <div class="form-row">
                 <div class="form-col">
@@ -285,11 +318,7 @@
             </div>
 
             <div class="image-upload-container">
-                <div class="image-upload-box">
-                    <label for="beforeImage" class="required">صورة المعاينة</label>
-                    <input type="file" id="beforeImage" name="beforeImage" accept="image/*" capture="environment" required>
-                    <img id="beforePreview" class="preview" alt="معاينة الصورة">
-                </div>
+                
                 <div class="image-upload-box">
                     <label for="duringImage">صورة أثناء التنفيذ</label>
                     <input type="file" id="duringImage" name="duringImage" accept="image/*" capture="environment">
